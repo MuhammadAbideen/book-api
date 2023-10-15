@@ -2,52 +2,33 @@ const express = require("express");
 
 const router = express.Router();
 
-const books = [
-  {
-    id: 1,
-    title: "Harry Potter and the Chamber of Secrets",
-    author: "J.K. Rowling",
-    year: 1998,
-    pages: 251,
-    publisher: "Bloomsbury",
-    language: "English",
-  },
-  {
-    id: 2,
-    title: "Clean Code",
-    author: "Some other author",
-    year: 1999,
-    pages: 317,
-    publisher: "Bloomsbury",
-    language: "English",
-  },
-];
+const Book = require("../models/book");
 
-router.get("/", (req, res) => {
-  console.log("This is coming from Book.js");
+router.get("/", async (req, res) => {
+  const books = await Book.find();
   res.send(books);
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = req.params.id;
-  res.send(books[id - 1]);
+  const book = await Book.findById(id);
+  res.send(book);
 });
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
   console.log(req.body);
   const book = req.body;
-  book.id = books.length + 1;
-  books.push(book);
-  res.send(book);
+  const dbBook = await Book.create(book);
+  res.send(dbBook);
 });
 
 // update api call
 
-router.delete("/:id", (req, res) => {
-  const id = req.params.id;
-  const book = books[id - 1];
-  books.splice(id - 1, 1);
-  res.send(book);
-});
+// router.delete("/:id", (req, res) => {
+//   const id = req.params.id;
+//   const book = books[id - 1];
+//   books.splice(id - 1, 1);
+//   res.send(book);
+// });
 
 module.exports = router;
